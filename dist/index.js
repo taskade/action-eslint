@@ -2955,7 +2955,12 @@ async function run() {
         auth: core.getInput('repo-token', { required: true }),
     });
     const context = github.context;
-    const prInfo = await graphql_1.graphql(gql `
+    const graphqlWithAuth = graphql_1.graphql.defaults({
+        headers: {
+            authorization: `token ${core.getInput('repo-token', { required: true })}`,
+        }
+    });
+    const prInfo = await graphqlWithAuth(gql `
       query($owner: String!, $name: String!, $prNumber: Int!) {
         repository(owner: $owner, name: $name) {
           pullRequest(number: $prNumber) {

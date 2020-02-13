@@ -18,7 +18,13 @@ async function run() {
   });
   const context = github.context;
 
-  const prInfo = await graphql(
+  const graphqlWithAuth = graphql.defaults({
+    headers: {
+      authorization: `token ${core.getInput('repo-token', { required: true })}`,
+    }
+  });
+
+  const prInfo = await graphqlWithAuth(
     gql`
       query($owner: String!, $name: String!, $prNumber: Int!) {
         repository(owner: $owner, name: $name) {
