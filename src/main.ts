@@ -102,7 +102,7 @@ async function run() {
       conclusion: 'failure',
       completed_at: new Date().toISOString()
     });
-    core.setFailed(error.message);
+    core.setFailed(JSON.stringify(error));
   }
 }
 
