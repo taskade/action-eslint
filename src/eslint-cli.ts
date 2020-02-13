@@ -35,16 +35,20 @@ export async function eslint(filesList: string[]) {
         column,
         endColumn
       } = msg;
-      annotations.push({
+
+      const annotation: Octokit.ChecksUpdateParamsOutputAnnotations = {
         path: filename,
         start_line: line || 0,
         end_line: endLine || line || 0,
-        start_column: column || 0,
-        end_column: endColumn || column || 0,
         annotation_level: ESLINT_TO_GITHUB_LEVELS[severity],
         title: ruleId || 'ESLint',
         message
-      });
+      }
+      if (annotation.start_line === annotation.end_line) {
+        annotation.start_column = column || 0;
+        annotation.end_column = endColumn || column || 0;
+      }
+      annotations.push(annotation);
     }
   }
 

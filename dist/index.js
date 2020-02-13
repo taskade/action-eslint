@@ -4282,16 +4282,19 @@ async function eslint(filesList) {
             continue;
         for (const msg of messages.slice(0, 50)) {
             const { line, severity, ruleId, message, endLine, column, endColumn } = msg;
-            annotations.push({
+            const annotation = {
                 path: filename,
                 start_line: line || 0,
                 end_line: endLine || line || 0,
-                start_column: column || 0,
-                end_column: endColumn || column || 0,
                 annotation_level: ESLINT_TO_GITHUB_LEVELS[severity],
                 title: ruleId || 'ESLint',
                 message
-            });
+            };
+            if (annotation.start_line === annotation.end_line) {
+                annotation.start_column = column || 0;
+                annotation.end_column = endColumn || column || 0;
+            }
+            annotations.push(annotation);
         }
     }
     return {
