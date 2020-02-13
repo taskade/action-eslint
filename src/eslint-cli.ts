@@ -1,8 +1,10 @@
 import * as path from 'path';
 
+import { Octokit } from '@octokit/rest';
+
 import { EXTENSIONS_TO_LINT } from './constants';
 
-const ESLINT_TO_GITHUB_LEVELS: import('@octokit/rest').ChecksUpdateParamsOutputAnnotations['annotation_level'][] = [
+const ESLINT_TO_GITHUB_LEVELS: Octokit.ChecksUpdateParamsOutputAnnotations['annotation_level'][] = [
   'notice',
   'warning',
   'failure'
@@ -18,7 +20,7 @@ export async function eslint(filesList: string[]) {
   // fixableErrorCount, fixableWarningCount are available too
   const { results, errorCount, warningCount } = report;
 
-  const annotations: import('@octokit/rest').ChecksUpdateParamsOutputAnnotations[] = [];
+  const annotations: Octokit.ChecksUpdateParamsOutputAnnotations[] = [];
   for (const result of results) {
     const { filePath, messages } = result;
     const filename = filesList.find(file => filePath.endsWith(file));
@@ -49,7 +51,7 @@ export async function eslint(filesList: string[]) {
   return {
     conclusion: (errorCount > 0
       ? 'failure'
-      : 'success') as import('@octokit/rest').ChecksCreateParams['conclusion'],
+      : 'success') as Octokit.ChecksCreateParams['conclusion'],
     output: {
       title: `${errorCount} error(s), ${warningCount} warning(s) found in ${filesList.length} file(s)`,
       summary: `${errorCount} error(s), ${warningCount} warning(s) found in ${filesList.length} file(s)`,

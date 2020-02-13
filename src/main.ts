@@ -3,6 +3,8 @@ import * as core from '@actions/core';
 import * as github from '@actions/github';
 import { CHECK_NAME, EXTENSIONS_TO_LINT } from './constants';
 import { eslint } from './eslint-cli';
+import {Octokit} from '@octokit/rest';
+import { graphql } from '@octokit/graphql';
 
 /**
  * This is just for syntax highlighting, does nothing
@@ -11,12 +13,12 @@ import { eslint } from './eslint-cli';
 const gql = (s: TemplateStringsArray): string => s.join('');
 
 async function run() {
-  const octokit = new github.GitHub(
-    core.getInput('repo-token', { required: true })
-  );
+  const octokit = new Octokit({
+    auth: core.getInput('repo-token', { required: true }),
+  });
   const context = github.context;
 
-  const prInfo = await octokit.graphql(
+  const prInfo = await graphql(
     gql`
       query($owner: String!, $name: String!, $prNumber: Int!) {
         repository(owner: $owner, name: $name) {
@@ -43,6 +45,10 @@ async function run() {
       prNumber: context.issue.number
     }
   );
+  if (prInfo === null) {
+    core.setFailed('Could not get PR info!');
+    return;
+  }
   const currentSha = prInfo.repository.pullRequest.commits.nodes[0].commit.oid;
   // console.log('Commit from GraphQL:', currentSha);
   const files = prInfo.repository.pullRequest.files.nodes;

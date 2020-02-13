@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "description": "GitHub Action to run ESLint",
-  "main": "lib/main.js",
+  "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "ncc build src/main.ts",
     "test": "jest"
   },
   "repository": {
@@ -22,19 +22,21 @@
   "license": "MIT",
   "dependencies": {
     "@actions/core": "1.2.0",
-    "@actions/github": "2.1.0"
+    "@actions/github": "2.1.0",
+    "@octokit/graphql": "^4.3.1"
   },
   "devDependencies": {
-    "@octokit/rest": "16.38.2",
+    "@octokit/rest": "16.43.1",
     "@types/eslint": "6.1.7",
     "@types/jest": "24.0.23",
     "@types/node": "12.12.17",
     "@types/semver": "6.2.0",
+    "@zeit/ncc": "^0.21.1",
     "eslint": "6.8.0",
     "jest": "25.1.0",
     "jest-circus": "25.1.0",
     "ts-jest": "25.0.0",
-    "typescript": "3.7.3"
+    "typescript": "3.7.5"
   },
   "eslintConfig": {
     "env": {
