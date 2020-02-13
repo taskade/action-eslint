@@ -23,7 +23,7 @@ export async function eslint(filesList: string[]) {
     const { filePath, messages } = result;
     const filename = filesList.find(file => filePath.endsWith(file));
     if (!filename) continue;
-    for (const msg of messages) {
+    for (const msg of messages.slice(0, 50)) {
       const {
         line,
         severity,
