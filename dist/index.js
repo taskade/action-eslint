@@ -2937,6 +2937,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
     result["default"] = mod;
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const path = __importStar(__webpack_require__(622));
 const core = __importStar(__webpack_require__(470));
@@ -2945,6 +2948,7 @@ const constants_1 = __webpack_require__(694);
 const eslint_cli_1 = __webpack_require__(300);
 const rest_1 = __webpack_require__(0);
 const graphql_1 = __webpack_require__(898);
+const fs_1 = __importDefault(__webpack_require__(747));
 /**
  * This is just for syntax highlighting, does nothing
  * @param {string} s
@@ -2992,6 +2996,7 @@ async function run() {
     // console.log('Commit from GraphQL:', currentSha);
     const files = prInfo.repository.pullRequest.files.nodes;
     const filesToLint = files
+        .filter(f => fs_1.default.existsSync(f.path))
         .filter(f => constants_1.EXTENSIONS_TO_LINT.has(path.extname(f.path)))
         .map(f => f.path);
     if (filesToLint.length < 1) {

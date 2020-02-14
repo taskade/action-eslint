@@ -5,6 +5,7 @@ import { CHECK_NAME, EXTENSIONS_TO_LINT } from './constants';
 import { eslint } from './eslint-cli';
 import {Octokit} from '@octokit/rest';
 import { graphql } from '@octokit/graphql';
+import fs from 'fs';
 
 /**
  * This is just for syntax highlighting, does nothing
@@ -60,6 +61,7 @@ async function run() {
   const files = prInfo.repository.pullRequest.files.nodes;
 
   const filesToLint = files
+    .filter(f => fs.existsSync(f.path))
     .filter(f => EXTENSIONS_TO_LINT.has(path.extname(f.path)))
     .map(f => f.path);
   if (filesToLint.length < 1) {
