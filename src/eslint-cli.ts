@@ -7,13 +7,11 @@ import { EXTENSIONS_TO_LINT } from './constants';
 const ESLINT_TO_GITHUB_LEVELS: Octokit.ChecksUpdateParamsOutputAnnotations['annotation_level'][] = [
   'notice',
   'warning',
-  'failure'
+  'failure',
 ];
 
 export async function eslint(filesList: string[]) {
-  const { CLIEngine } = (await import(
-    path.join(process.cwd(), 'node_modules/eslint')
-  )) as typeof import('eslint');
+  const { CLIEngine } = (await import(path.join(process.cwd(), 'node_modules/eslint'))) as typeof import('eslint');
 
   const cli = new CLIEngine({ extensions: [...EXTENSIONS_TO_LINT] });
   const report = cli.executeOnFiles(filesList);
@@ -26,15 +24,7 @@ export async function eslint(filesList: string[]) {
     const filename = filesList.find(file => filePath.endsWith(file));
     if (!filename) continue;
     for (const msg of messages.slice(0, 50)) {
-      const {
-        line,
-        severity,
-        ruleId,
-        message,
-        endLine,
-        column,
-        endColumn
-      } = msg;
+      const { line, severity, ruleId, message, endLine, column, endColumn } = msg;
 
       const annotation: Octokit.ChecksUpdateParamsOutputAnnotations = {
         path: filename,
@@ -42,8 +32,8 @@ export async function eslint(filesList: string[]) {
         end_line: endLine || line || 0,
         annotation_level: ESLINT_TO_GITHUB_LEVELS[severity],
         title: ruleId || 'ESLint',
-        message
-      }
+        message,
+      };
       if (annotation.start_line === annotation.end_line) {
         annotation.start_column = column || 0;
         annotation.end_column = endColumn || column || 0;
@@ -53,13 +43,11 @@ export async function eslint(filesList: string[]) {
   }
 
   return {
-    conclusion: (errorCount > 0
-      ? 'failure'
-      : 'success') as Octokit.ChecksCreateParams['conclusion'],
+    conclusion: (errorCount > 0 ? 'failure' : 'success') as Octokit.ChecksCreateParams['conclusion'],
     output: {
       title: `${errorCount} error(s), ${warningCount} warning(s) found in ${filesList.length} file(s)`,
       summary: `${errorCount} error(s), ${warningCount} warning(s) found in ${filesList.length} file(s)`,
-      annotations
-    }
+      annotations,
+    },
   };
 }
